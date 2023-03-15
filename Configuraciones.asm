@@ -5,7 +5,7 @@ Configurar
 	call ConfigurarInterrupciones
 	call ConfigurarPuertos
 	call LimpiarRam
-	retfie
+	return
 	
 ;Habilitaci¢n de interrupciones externas y del timer.
 ConfigurarInterrupciones
@@ -24,7 +24,7 @@ ConfigurarInterrupciones
 	movlw	0X03	; prescalador 1:16 TMR0
 	movwf	OPTION_REG	;prescalador
 	
-	retfie
+	return
 
 ConfigurarPuertos
 	; Puertos como E/S digital

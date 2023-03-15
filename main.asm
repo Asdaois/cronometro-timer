@@ -1,5 +1,6 @@
 #include <p16f1787.inc>
 #include "RAM.inc"
+
 ;CONFIG1
 ;__config 0xFFE1
 	__CONFIG _CONFIG1,_FOSC_INTOSC & _WDTE_OFF & _PWRTE_OFF & _MCLRE_ON & _CP_OFF & _BOREN_ON & _CLKOUTEN_OFF & _IESO_ON & _FCMEN_ON
@@ -26,12 +27,12 @@ ManejarTic
 	return	; No se ha desbordado
 	
 	bcf PIR1, TMR1IF ; Resetear manualmente
-	movlw d'12'
-	movwf centesimas
+	call IniciarTiempo
 	return
 
 ManejarBotonPresionado
-	movlw 0x55
+	banksel IOCAF
+	call ManejarInicioPausa
 	return
 
 ManejarMostrarDisplay
@@ -43,16 +44,40 @@ ManejarMostrarDisplay
 	bcf INTCON, TMR0IF ; Resetear manualmente
 	return
 
-IniciarCronometro
+AlternarIniciarPararTiempo
+	banksel T1CON
+	btfss T1CON, TMR1ON 
+	goto IniciarTiempo
+	goto PararTiempo
+	
+IniciarTiempo
+	call ReiniciarTimer
 	banksel T1CON
 	bsf T1CON, TMR1ON	
 	return
 
-PararCronometro
+PararTiempo
 	banksel T1CON
 	bcf T1CON, TMR1ON	
 	return
-;-----------
+
+ReiniciarTimer
+	call PararTiempo
+	movlw	0xF6;
+	movwf	TMR1H; 
+	movlw	0x3C
+	movwf	TMR1L
+	return
+	
+ManejarInicioPausa
+	btfss IOCAF, IOCAF0
+	return
+	call AlternarIniciarPararTiempo
+	banksel IOCAF
+	bcf IOCAF, IOCAF0
+	return
+	
+
 #include "Configuraciones.asm"
 ;--------------------------------------------------------------------------------------
 	END
