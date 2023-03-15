@@ -1,0 +1,51 @@
+## SCL Builder Setup File: Do not edit!!
+
+## VERSION: 3.60.00.00
+## FORMAT:  v2.00.01
+## DEVICE:  PIC16F1787
+
+## PINREGACTIONS
+cyc
+No Repeat
+--
+&
+## ADVPINREGACTIONS
+--
+&
+--
+COND1
+Any
+
+
+
+
+
+
+--
+&
+## CLOCK
+&
+## STIMULUSFILE
+&
+## RESPONSEFILE
+&
+## ASYNCH
+Pin
+RA0
+Toggle
+
+Boton Inicio / Continuar
+-1
+--
+Pin
+RA1
+Toggle
+
+Boton Reinicio
+-1
+--
+&
+## ADVANCEDSCL
+
+0
+&
