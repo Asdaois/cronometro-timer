@@ -6,7 +6,5 @@
 	segundos_unidad
 	centesimas_decima
 	centesimas_unidad 
+	control_7seg
 	ENDC
-
-
-;-----------------------	

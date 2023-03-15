@@ -1,5 +1,6 @@
 #include <p16f1787.inc>
 #include "RAM.inc"
+#include "CronometroTemporizadorMacros.inc"
 
 ;CONFIG1
 ;__config 0xFFE1
@@ -13,7 +14,6 @@ RST 	code  	0x0
 
 Start
 	call Configurar
-
 Loop
 	call ManejarTic
 	call ManejarBotonPresionado
@@ -25,6 +25,8 @@ ManejarTic
 	; Revisar Timer1 Overflow Interrupt Flag bit
 	btfss	PIR1,TMR1IF 
 	return	; No se ha desbordado
+	
+	call Cronometro
 	
 	bcf PIR1, TMR1IF ; Resetear manualmente
 	call IniciarTiempo
@@ -41,7 +43,12 @@ ManejarMostrarDisplay
 	btfss 	INTCON, TMR0IF 
 	return 	; No se ha desbordado
 	
+	call Display
+	
 	bcf INTCON, TMR0IF ; Resetear manualmente
+	banksel TMR0
+	movlw	.131
+	movwf	TMR0; inicio nuevamente
 	return
 	
 ManejarInicioPausa
@@ -51,9 +58,49 @@ ManejarInicioPausa
 	banksel IOCAF
 	bcf IOCAF, IOCAF0
 	return
+
+Cronometro
+	IncrementarYComparar centesimas_unidad, d'10'
+	btfss 	STATUS, Z ; la comparacion fue 10?
+	return
 	
+	IncrementarYComparar centesimas_decima, d'10'
+	btfss 	STATUS, Z ; 
+	return
+	
+	IncrementarYComparar segundos_unidad, d'10'
+	btfss 	STATUS, Z ; la comparacion fue 10?
+	return
+	
+	IncrementarYComparar segundos_decima, d'6'
+	btfss 	STATUS, Z ; la comparacion fue 6?
+	return
+	
+	IncrementarYComparar minutos_unidad, d'10'
+	btfss 	STATUS, Z ; la comparacion fue 10?
+	return
+	
+	IncrementarYComparar minutos_decima, d'10'
+	; Maximos minutos a contar 99
+	return
+
+Display
+	movf control_7seg, W
+	banksel PORTB
+	movwf PORTB
+	
+	rlf control_7seg, F
+	btfss control_7seg, 6
+	return
+	
+	movlw 0x01
+	movwf control_7seg
+	return	
+
+;-----------------------	
 
 #include "Configuraciones.asm"
 #include "FuncionesTimer.asm"
+#include "7seg.asm"
 ;--------------------------------------------------------------------------------------
 	END

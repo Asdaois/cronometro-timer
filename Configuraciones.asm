@@ -70,8 +70,11 @@ LimpiarRam
 	clrf segundos_decima
 	clrf segundos_unidad
 	clrf centesimas_decima
-	clrf centesimas_unidad 
+	clrf centesimas_unidad
+	movlw 0x01 ;Primer LED
+	movwf control_7seg 
 	return
+	
 #include "FuncionesTimer.asm"	
 ;-----------------------	
 	END
