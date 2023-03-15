@@ -65,9 +65,13 @@ ConfigurarPuertos
 	return	
 
 LimpiarRam
-	clrf minutos
-	clrf segundos
-	clrf centesimas
+	clrf minutos_decima
+	clrf minutos_unidad 
+	clrf segundos_decima
+	clrf segundos_unidad
+	clrf centesimas_decima
+	clrf centesimas_unidad 
 	return
+#include "FuncionesTimer.asm"	
 ;-----------------------	
 	END
