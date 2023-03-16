@@ -37,12 +37,26 @@ ManejarPuntero
 	banksel 	PORTB
 	movwf 	PORTB
 	
+	call ReiniciarPuntero
+	
 	rlf 	control_7seg, F
 	btfss 	control_7seg, 6
 	return
 	
+	call ColocarPunteroAlInicio
+	return
+
+ReiniciarPuntero
+	Comparar	control_7seg, 0x0
+	btfss	STATUS, Z
+	return
+	call ColocarPunteroAlInicio
+	return
+	
+
+ColocarPunteroAlInicio
 	movlw 	0x1
-	movwf 	control_7seg
+	movwf	control_7seg
 	return
 	
 ObtenerValorEnW
@@ -55,6 +69,12 @@ ObtenerValorEnW
 	MoverValorWSiCoincide 5, minutos_decima
 	movwf valor_7seg
 	return
-	
+
+DesactivarDisplay
+	clrf 	control_7seg
+	banksel 	PORTB
+	clrf	PORTB
+	clrf	PORTD
+	return	
 ;------------------------	
 	END

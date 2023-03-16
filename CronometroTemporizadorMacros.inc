@@ -7,7 +7,7 @@ IncrementarYComparar macro numero, comparacion
 	incf 	numero, F
 	movf 	numero, W
 	xorlw 	comparacion	; verifico si es igual a comparacion
-	btfsc 	STATUS,2 	; si son iguales limpia el numero			; regresa
+	btfsc 	STATUS, Z 	; si son iguales limpia el numero			; regresa
 	clrf	numero		; Limpia el numero
 	endm
 
@@ -16,4 +16,25 @@ MoverValorWSiCoincide macro numero, direccion
 	movf direccion, W
 	endm
 
+; Si los numeros son iguales entoces Z en status es zero
+Comparar macro numero, comparacion
+	movf	numero, W
+	xorlw	comparacion
+	endm
+
+MoverAF macro registro, literal
+	movlw 	literal
+	movwf	registro
+	endm
+
+AlternarBit macro registro, bit
+	clrf 	helper	; Limpiar helper
+	bsf 	helper, bit	; Setear el bit
+	movf	helper, W	; pasarlo a w
+	xorwf 	registro, F	; xor operacion
+	; si bit esta en 1 -> 0
+	; si bit esta en 0 -> 1
+	; el resto no se modifican
+	endm
+		
 #endif

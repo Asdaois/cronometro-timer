@@ -71,6 +71,8 @@ LimpiarRam
 	clrf segundos_unidad
 	clrf centesimas_decima
 	clrf centesimas_unidad
+	clrf tiempo_parpadeo	; Tiempo desde ultimo parpadeo 0
+	clrf parpadeo_control	; Nadie parpadea
 	movlw 0x01 ;Primer LED
 	movwf control_7seg 
 	return
@@ -78,5 +80,6 @@ LimpiarRam
 	
 #include "FuncionesTimer.asm"
 #include "7seg.asm"	
+#include "cronometro.asm"
 ;-----------------------	
 	END

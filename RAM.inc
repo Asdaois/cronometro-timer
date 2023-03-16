@@ -1,3 +1,23 @@
+
+#ifndef __RAM
+#define __RAM
+#include <p16f1787.inc>
+#define esCronometro 0
+#define estaConfigurando 1
+#define estaParpadeando 2
+#define parpadeo_ninugno 0x0
+#define parpadeo_todos 0x1
+#define parpadeo_segundos 0x2
+#define parpadeos_minutos 0x3
+#define medio_segundo 0x19 ; 50 ticks aproximadamente .5 segundos
+
+Boton_StartPausa	equ	RA0
+Boton_Reinicio	equ	RA1
+Boton_MenuEnter	equ	RA2
+Boton_Arriba 	equ	RA3
+Boton_Abajo	equ	RA4
+Boton_Atras	equ	RA5
+
 ; Asigna valores en la ram comun desde 0x20
 	CBLOCK 0x70
 	minutos_decima
@@ -9,10 +29,8 @@
 	control_7seg
 	valor_7seg
 	boleanos
+	tiempo_parpadeo
+	parpadeo_control
+	helper
 	ENDC
-
-#ifndef __BOLEANOS
-#define __BOLEANOS
-#define esCronometro 0
-#define estaConfigurando 1
 #endif
