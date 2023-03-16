@@ -38,7 +38,7 @@ ConfigurarPuertos
 	movwf 	TRISA
 	; Pull-up
 	banksel 	WPUA
-	movlw 	0x07
+	movlw 	0xFF
 	movwf 	WPUA
 	; INTERRUPT-ON-CHANGE NEGATIVE EDGE REGISTER
 	banksel IOCAN
@@ -64,6 +64,7 @@ ConfigurarPuertos
 	return	
 
 LimpiarRam
+	banksel STATUS
 	clrf minutos_decima
 	clrf minutos_unidad 
 	clrf segundos_decima
@@ -73,6 +74,7 @@ LimpiarRam
 	movlw 0x01 ;Primer LED
 	movwf control_7seg 
 	return
+
 	
 #include "FuncionesTimer.asm"
 #include "7seg.asm"	

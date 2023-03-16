@@ -1,5 +1,8 @@
 #include <p16f1787.inc>
 #include <RAM.inc>
+#ifndef __MACROS
+#define __MACROS
+
 IncrementarYComparar macro numero, comparacion
 	incf 	numero, F
 	movf 	numero, W
@@ -12,3 +15,5 @@ MoverValorWSiCoincide macro numero, direccion
 	btfsc control_7seg, numero
 	movf direccion, W
 	endm
+
+#endif

@@ -30,8 +30,8 @@ ManejarTic
 	return
 
 ManejarBotonPresionado
-	banksel IOCAF
 	call ManejarInicioPausa
+	call ManejarReset
 	return
 
 ManejarMostrarDisplay
@@ -49,13 +49,28 @@ ManejarMostrarDisplay
 	return
 	
 ManejarInicioPausa
-	btfss IOCAF, IOCAF0
+	banksel 	IOCAF
+	btfss 	IOCAF, IOCAF0
 	return
-	call AlternarIniciarPararTiempo
-	banksel IOCAF
-	bcf IOCAF, IOCAF0
+	
+	call 	AlternarIniciarPararTiempo
+	
+	banksel 	IOCAF
+	bcf 	IOCAF, IOCAF0
 	return
 
+ManejarReset
+	banksel 	IOCAF
+	btfss 	IOCAF, IOCAF1
+	return
+	
+	call LimpiarRam
+	call PararTiempo
+	
+	banksel 	IOCAF
+	bcf 	IOCAF, IOCAF1
+	return
+	
 Cronometro
 	IncrementarYComparar centesimas_unidad, 0xA
 	btfss 	STATUS, Z 
@@ -82,40 +97,7 @@ Cronometro
 	return
 
 	
-Display	
-	call	ObtenerValorEnW
-	
-	movf 	valor_7seg, W
-	call 	BCD_7seg
-	banksel 	PORTD
-	movwf	PORTD
-	
-	call 	ManejarPuntero
-	return	
 
-ManejarPuntero
-	movf 	control_7seg, W
-	banksel 	PORTB
-	movwf 	PORTB
-	
-	rlf 	control_7seg, F
-	btfss 	control_7seg, 6
-	return
-	
-	movlw 	0x1
-	movwf 	control_7seg
-	return
-	
-ObtenerValorEnW
-	clrw
-	MoverValorWSiCoincide 0, centesimas_unidad
-	MoverValorWSiCoincide 1, centesimas_decima
-	MoverValorWSiCoincide 2, segundos_unidad
-	MoverValorWSiCoincide 3, segundos_decima
-	MoverValorWSiCoincide 4, minutos_unidad
-	MoverValorWSiCoincide 5, minutos_decima
-	movwf valor_7seg
-	return
 
 ;-----------------------	
 
