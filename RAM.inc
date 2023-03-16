@@ -11,6 +11,12 @@
 #define parpadeos_minutos 0x3
 #define medio_segundo 0x19 ; 50 ticks aproximadamente .5 segundos
 
+#define modo_cronometro_pausado 0x0
+#define modo_cronometro_empezo 0x1
+#define modo_temporizador_configuracion 0x2
+#define modo_temporizador_empezo 0x3
+#define modo_temporizador_termino 0x4
+
 Boton_StartPausa	equ	RA0
 Boton_Reinicio	equ	RA1
 Boton_MenuEnter	equ	RA2
@@ -32,5 +38,6 @@ Boton_Atras	equ	RA5
 	tiempo_parpadeo
 	parpadeo_control
 	helper
+	modo
 	ENDC
 #endif

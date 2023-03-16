@@ -27,6 +27,11 @@ MoverAF macro registro, literal
 	movwf	registro
 	endm
 
+CambiarModo macro modo_nuevo
+	movlw 	modo_nuevo
+	movwf	modo
+	endm
+
 AlternarBit macro registro, bit
 	clrf 	helper	; Limpiar helper
 	bsf 	helper, bit	; Setear el bit
@@ -36,5 +41,11 @@ AlternarBit macro registro, bit
 	; si bit esta en 0 -> 1
 	; el resto no se modifican
 	endm
-		
+
+SiModo macro literal
+	movf	modo, W
+	xorlw	literal
+	btfss	STATUS, Z
+	goto $+2
+	endm	
 #endif

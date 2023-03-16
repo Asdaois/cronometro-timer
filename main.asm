@@ -12,6 +12,7 @@ RST 	code  	0x0
 Start
 	call 	Configurar
 	call 	IniciarTiempo
+	CambiarModo modo_cronometro_pausado
 	goto 	Loop
 Loop
 	call 	ManejarTic
@@ -26,7 +27,10 @@ ManejarTic
 	btfss	PIR1,TMR1IF 
 	return	; No se ha desbordado
 	
+	SiModo modo_cronometro_empezo
 	call 	Cronometro
+	
+	SiModo modo_temporizador_configuracion
 	call	ControlParpadeo
 	
 	bcf 	PIR1, TMR1IF ; Resetear manualmente
@@ -52,22 +56,39 @@ ManejarMostrarDisplay
 	return
 	
 ManejarBotonPresionado
-	call 	CronometroControl
-	nop
+	SiModo modo_cronometro_pausado
+	call 	ManejarCronometroPausado
+	SiModo modo_cronometro_empezo
+	call	ManejarCronometroEmpezo
 	return
 
-
-CronometroControl
-	call ManejarInicioPausa
+ManejarCronometroEmpezo
+	call CronometroPausa
 	call ManejarReset
 	return
 
-ManejarInicioPausa
+ManejarCronometroPausado
+	call CronometroEmpezar
+	call ManejarReset
+	return
+
+CronometroEmpezar
 	banksel 	IOCAF
 	btfss 	IOCAF, IOCAF0
 	return
 	
-	call 	AlternarIniciarPararTiempo
+	CambiarModo modo_cronometro_empezo
+	
+	banksel 	IOCAF
+	bcf 	IOCAF, IOCAF0
+	return
+
+CronometroPausa
+	banksel 	IOCAF
+	btfss 	IOCAF, IOCAF0
+	return
+	
+	CambiarModo modo_cronometro_pausado
 	
 	banksel 	IOCAF
 	bcf 	IOCAF, IOCAF0
@@ -78,8 +99,9 @@ ManejarReset
 	btfss 	IOCAF, IOCAF1
 	return
 	
+	CambiarModo modo_cronometro_pausado
+	
 	call LimpiarRam
-	call PararTiempo
 	
 	banksel 	IOCAF
 	bcf 	IOCAF, IOCAF1
@@ -121,7 +143,7 @@ ControlParpadeo
 	AlternarBit boleanos, estaParpadeando
 	
 	btfss	boleanos, estaParpadeando ; desactivar puntero
-	call DesactivarDisplay
+	call 	DesactivarDisplay
 	
 	btfsc	boleanos, estaParpadeando ;Activar puntero
 	bsf 	control_7seg, 0
