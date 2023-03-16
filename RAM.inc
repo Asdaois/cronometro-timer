@@ -2,6 +2,7 @@
 #ifndef __RAM
 #define __RAM
 #include <p16f1787.inc>
+
 #define esCronometro 0
 #define estaConfigurando 1
 #define estaParpadeando 2
@@ -13,9 +14,9 @@
 
 #define modo_cronometro_pausado 0x0
 #define modo_cronometro_empezo 0x1
-#define modo_temporizador_configuracion 0x2
+#define modo_configuracion 0x2
 #define modo_temporizador_empezo 0x3
-#define modo_temporizador_termino 0x4
+#define modo_temporizador_pausado 0x4
 
 Boton_StartPausa	equ	RA0
 Boton_Reset	equ	RA1

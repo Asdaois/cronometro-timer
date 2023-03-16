@@ -13,6 +13,7 @@ Start
 	call 	Configurar
 	call 	IniciarTiempo
 	CambiarModo modo_cronometro_pausado
+	bsf	boleanos, esCronometro
 	goto 	Loop
 Loop
 	call 	ManejarTic
@@ -30,7 +31,7 @@ ManejarTic
 	SiModo modo_cronometro_empezo
 	call 	Cronometro
 	
-	SiModo modo_temporizador_configuracion
+	SiModo modo_configuracion
 	call	ControlParpadeo
 	
 	bcf 	PIR1, TMR1IF ; Resetear manualmente
@@ -60,38 +61,8 @@ ManejarModo
 	call 	ManejarCronometroPausado
 	SiModo modo_cronometro_empezo
 	call	ManejarCronometroEmpezo
-	SiModo modo_temporizador_configuracion
-	call 	ManejarTemporizadorConfiguracion
-	return
-	
-ManejarCronometroPausado
-	call ManejarPulsadorEmpezar
-	call ManejarPulsadorReset
-	return
-	
-ManejarCronometroEmpezo
-	call ManejarPulsadorPausa
-	call ManejarPulsadorReset
-	return
-
-ManejarPulsadorEmpezar
-	SiBotonFuePresionadoContinuar Boton_StartPausa
-	CambiarModo modo_cronometro_empezo
-
-	return
-
-ManejarPulsadorPausa
-	SiBotonFuePresionadoContinuar Boton_StartPausa	
-	CambiarModo modo_cronometro_pausado
-
-	return
-
-ManejarPulsadorReset
-	SiBotonFuePresionadoContinuar Boton_Reset
-	CambiarModo modo_cronometro_pausado
-		
-	call LimpiarRam
-
+	SiModo modo_configuracion
+	call 	ManejarConfiguracion
 	return
 
 Cronometro
@@ -136,15 +107,58 @@ ControlParpadeo
 	bsf 	control_7seg, 0
 	
 	return
+	
+ManejarCronometroPausado
+	call ManejarPulsadorEmpezar
+	call ManejarPulsadorReset
+	call ManejarPulsadorConfiguracion
+	return
+	
+ManejarCronometroEmpezo
+	call ManejarPulsadorPausa
+	call ManejarPulsadorReset
+	call ManejarPulsadorConfiguracion
+	return
+	
+ManejarConfiguracion
+	call ManejarPulsadorAtras
+	return
 
-ManejarTemporizadorConfiguracion
-	call ManejarPulsadorEnter
-	return	
-
-ManejarPulsadorEnter
-	SiBotonFuePresionadoContinuar Boton_MenuEnter
-	CambiarModo modo_cronometro_empezo
+ManejarPulsadorAtras
+	SiBotonFuePresionadoContinuar Boton_Atras
+	btfsc	boleanos, esCronometro	
+	CambiarModo modo_cronometro_pausado
+	
+	btfss  	boleanos, esCronometro
+	CambiarModo modo_temporizador_pausado
+	
 	bcf	boleanos, estaParpadeando
+	return
+
+ManejarPulsadorConfiguracion
+	SiBotonFuePresionadoContinuar Boton_MenuEnter
+	CambiarModo modo_configuracion
+	call LimpiarRam
+	return
+	
+ManejarPulsadorEmpezar
+	SiBotonFuePresionadoContinuar Boton_StartPausa
+	CambiarModo modo_cronometro_empezo
+
+	return
+
+ManejarPulsadorPausa
+	SiBotonFuePresionadoContinuar Boton_StartPausa	
+	CambiarModo modo_cronometro_pausado
+
+	return
+
+ManejarPulsadorReset
+	SiBotonFuePresionadoContinuar Boton_Reset
+	CambiarModo modo_cronometro_pausado
+		
+	call LimpiarRam
+
 	return
 ;-----------------------	
 
