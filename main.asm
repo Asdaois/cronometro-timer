@@ -2,12 +2,9 @@
 #include "RAM.inc"
 #include "CronometroTemporizadorMacros.inc"
 
-;CONFIG1
-;__config 0xFFE1
-	__CONFIG _CONFIG1,_FOSC_INTOSC & _WDTE_OFF & _PWRTE_OFF & _MCLRE_ON & _CP_OFF & _BOREN_ON & _CLKOUTEN_OFF & _IESO_ON & _FCMEN_ON
-;CONFIG2
-;__config 0xDFFF
-	__CONFIG _CONFIG2, _WRT_OFF & _VCAPEN_OFF & _PLLEN_ON & _STVREN_ON & _BORV_LO & _LPBOR_OFF & _LVP_OFF
+;CONFIG1 & CONFIG2
+__CONFIG _CONFIG1, _FOSC_INTOSC & _WDTE_OFF & _PWRTE_OFF & _MCLRE_ON & _CP_OFF & _CPD_OFF & _BOREN_ON & _CLKOUTEN_OFF & _IESO_ON & _FCMEN_ON
+__CONFIG _CONFIG2, _WRT_OFF & _VCAPEN_OFF & _PLLEN_ON & _STVREN_ON & _BORV_LO & _LPBOR_OFF & _LVP_ON
 
 RST 	code  	0x0 
 	goto 	Start
@@ -47,7 +44,7 @@ ManejarMostrarDisplay
 	
 	bcf INTCON, TMR0IF ; Resetear manualmente
 	banksel TMR0
-	movlw	.131
+	movlw	.220
 	movwf	TMR0; inicio nuevamente
 	return
 	
@@ -60,42 +57,65 @@ ManejarInicioPausa
 	return
 
 Cronometro
-	IncrementarYComparar centesimas_unidad, d'10'
-	btfss 	STATUS, Z ; la comparacion fue 10?
+	IncrementarYComparar centesimas_unidad, 0xA
+	btfss 	STATUS, Z 
 	return
 	
-	IncrementarYComparar centesimas_decima, d'10'
-	btfss 	STATUS, Z ; 
+	IncrementarYComparar centesimas_decima, 0xA
+	btfss 	STATUS, Z 
 	return
 	
-	IncrementarYComparar segundos_unidad, d'10'
-	btfss 	STATUS, Z ; la comparacion fue 10?
+	IncrementarYComparar segundos_unidad, 0xA
+	btfss 	STATUS, Z 
 	return
 	
-	IncrementarYComparar segundos_decima, d'6'
-	btfss 	STATUS, Z ; la comparacion fue 6?
+	IncrementarYComparar segundos_decima, 0x6
+	btfss 	STATUS, Z 
 	return
 	
-	IncrementarYComparar minutos_unidad, d'10'
-	btfss 	STATUS, Z ; la comparacion fue 10?
+	IncrementarYComparar minutos_unidad, 0xA
+	btfss 	STATUS, Z 
 	return
 	
-	IncrementarYComparar minutos_decima, d'10'
+	IncrementarYComparar minutos_decima, 0xA
 	; Maximos minutos a contar 99
 	return
 
-Display
-	movf control_7seg, W
-	banksel PORTB
-	movwf PORTB
 	
-	rlf control_7seg, F
-	btfss control_7seg, 6
+Display	
+	call	ObtenerValorEnW
+	
+	movf 	valor_7seg, W
+	call 	BCD_7seg
+	banksel 	PORTD
+	movwf	PORTD
+	
+	call 	ManejarPuntero
+	return	
+
+ManejarPuntero
+	movf 	control_7seg, W
+	banksel 	PORTB
+	movwf 	PORTB
+	
+	rlf 	control_7seg, F
+	btfss 	control_7seg, 6
 	return
 	
-	movlw 0x01
-	movwf control_7seg
-	return	
+	movlw 	0x1
+	movwf 	control_7seg
+	return
+	
+ObtenerValorEnW
+	clrw
+	MoverValorWSiCoincide 0, centesimas_unidad
+	MoverValorWSiCoincide 1, centesimas_decima
+	MoverValorWSiCoincide 2, segundos_unidad
+	MoverValorWSiCoincide 3, segundos_decima
+	MoverValorWSiCoincide 4, minutos_unidad
+	MoverValorWSiCoincide 5, minutos_decima
+	movwf valor_7seg
+	return
 
 ;-----------------------	
 

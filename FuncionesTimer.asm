@@ -1,6 +1,6 @@
 #include <p16f1787.inc>
 #include "RAM.inc"
-
+FuncionesTimer code
 AlternarIniciarPararTiempo
 	banksel T1CON
 	btfss T1CON, TMR1ON 
@@ -20,10 +20,11 @@ PararTiempo
 
 ReiniciarTimer
 	call PararTiempo
-	movlw	0xF6;
+	movlw	0xFF;
 	movwf	TMR1H; 
-	movlw	0x3C
+	movlw	0x06
 	movwf	TMR1L
 	return
 
+#include "7seg.asm"
 	END

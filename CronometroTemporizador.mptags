@@ -1,0 +1,35 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.5.4	//
+!_TAG_REVISION_NAME	MCHPTags	//
+!_TAG_REVISION_VERSION	6.0.1	//
+AlternarIniciarPararTiempo	C:\Users\josex\projects\assembler\cronometro-timer\FuncionesTimer.asm	4;"	l	line:4
+BCD_7seg	C:\Users\josex\projects\assembler\cronometro-timer\7seg.asm	4;"	l	line:4
+Configuraciones	C:\Users\josex\projects\assembler\cronometro-timer\Configuraciones.asm	3;"	l	line:3
+Configurar	C:\Users\josex\projects\assembler\cronometro-timer\Configuraciones.asm	4;"	l	line:4
+ConfigurarInterrupciones	C:\Users\josex\projects\assembler\cronometro-timer\Configuraciones.asm	11;"	l	line:11
+ConfigurarPuertos	C:\Users\josex\projects\assembler\cronometro-timer\Configuraciones.asm	28;"	l	line:28
+Cronometro	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	60;"	l	line:60
+Display	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	86;"	l	line:86
+FuncionesTimer	C:\Users\josex\projects\assembler\cronometro-timer\FuncionesTimer.asm	3;"	l	line:3
+IncrementarYComparar	C:\Users\josex\projects\assembler\cronometro-timer\CronometroTemporizadorMacros.inc	3;"	m	line:3
+IniciarTiempo	C:\Users\josex\projects\assembler\cronometro-timer\FuncionesTimer.asm	10;"	l	line:10
+LimpiarRam	C:\Users\josex\projects\assembler\cronometro-timer\Configuraciones.asm	66;"	l	line:66
+Loop	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	15;"	l	line:15
+ManejarBotonPresionado	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	33;"	l	line:33
+ManejarInicioPausa	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	52;"	l	line:52
+ManejarMostrarDisplay	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	38;"	l	line:38
+ManejarPuntero	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	97;"	l	line:97
+ManejarTic	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	21;"	l	line:21
+MoverValorWSiCoincide	C:\Users\josex\projects\assembler\cronometro-timer\CronometroTemporizadorMacros.inc	11;"	m	line:11
+ObtenerValorEnW	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	110;"	l	line:110
+PararTiempo	C:\Users\josex\projects\assembler\cronometro-timer\FuncionesTimer.asm	16;"	l	line:16
+RST	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	9;"	l	line:9
+ReiniciarTimer	C:\Users\josex\projects\assembler\cronometro-timer\FuncionesTimer.asm	21;"	l	line:21
+Segmentos	C:\Users\josex\projects\assembler\cronometro-timer\7seg.asm	2;"	l	line:2
+Start	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	12;"	l	line:12
+__CONFIG	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	6;"	l	line:6
+__CONFIG	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	7;"	l	line:7

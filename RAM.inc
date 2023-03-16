@@ -7,4 +7,5 @@
 	centesimas_decima
 	centesimas_unidad 
 	control_7seg
+	valor_7seg
 	ENDC

@@ -1,8 +1,7 @@
 #include <p16f1787.inc>
-#include "RAM.inc"
+Segmentos code
 
-code
-BCD_7seg
+BCD_7seg 
 	brw		;xgfe dcba
 	retlw 0x40	; 0-> 0100 0000
 	retlw 0x79	; 1-> 0111 1001
@@ -20,5 +19,6 @@ BCD_7seg
 	nop;	13
 	nop;	14
 	retlw 0x7F; apagar todos los displays
-	
+
+		
 	END

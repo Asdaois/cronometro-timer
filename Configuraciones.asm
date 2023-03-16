@@ -1,6 +1,6 @@
 #include <p16f1787.inc>
 #include "RAM.inc"
-	code
+Configuraciones code
 Configurar
 	call ConfigurarInterrupciones
 	call ConfigurarPuertos
@@ -23,7 +23,6 @@ ConfigurarInterrupciones
 	; OPTION REG: OPTION REGISTER
 	movlw	0X03	; prescalador 1:16 TMR0
 	movwf	OPTION_REG	;prescalador
-	
 	return
 
 ConfigurarPuertos
@@ -75,6 +74,7 @@ LimpiarRam
 	movwf control_7seg 
 	return
 	
-#include "FuncionesTimer.asm"	
+#include "FuncionesTimer.asm"
+#include "7seg.asm"	
 ;-----------------------	
 	END
