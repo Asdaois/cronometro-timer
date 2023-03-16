@@ -18,7 +18,7 @@
 #define modo_temporizador_termino 0x4
 
 Boton_StartPausa	equ	RA0
-Boton_Reinicio	equ	RA1
+Boton_Reset	equ	RA1
 Boton_MenuEnter	equ	RA2
 Boton_Arriba 	equ	RA3
 Boton_Abajo	equ	RA4

@@ -47,5 +47,14 @@ SiModo macro literal
 	xorlw	literal
 	btfss	STATUS, Z
 	goto $+2
-	endm	
+	endm
+
+SiBotonFuePresionadoContinuar macro boton
+	banksel 	IOCAF
+	btfss 	IOCAF, boton
+	return
+	
+	banksel 	IOCAF
+	bcf 	IOCAF, boton	
+	endm
 #endif

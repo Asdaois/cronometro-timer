@@ -61,6 +61,9 @@ ConfigurarPuertos
 	clrf PORTB
 	clrf PORTC
 	clrf PORTD
+	
+	banksel IOCAF
+	clrf IOCAF
 	return	
 
 LimpiarRam

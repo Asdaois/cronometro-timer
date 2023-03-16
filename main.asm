@@ -16,7 +16,7 @@ Start
 	goto 	Loop
 Loop
 	call 	ManejarTic
-	call 	ManejarBotonPresionado
+	call 	ManejarModo
 	call 	ManejarMostrarDisplay
 	goto 	Loop
 
@@ -55,56 +55,43 @@ ManejarMostrarDisplay
 	movwf	TMR0; inicio nuevamente
 	return
 	
-ManejarBotonPresionado
+ManejarModo
 	SiModo modo_cronometro_pausado
 	call 	ManejarCronometroPausado
 	SiModo modo_cronometro_empezo
 	call	ManejarCronometroEmpezo
+	SiModo modo_temporizador_configuracion
+	call 	ManejarTemporizadorConfiguracion
 	return
-
-ManejarCronometroEmpezo
-	call CronometroPausa
-	call ManejarReset
-	return
-
+	
 ManejarCronometroPausado
-	call CronometroEmpezar
-	call ManejarReset
-	return
-
-CronometroEmpezar
-	banksel 	IOCAF
-	btfss 	IOCAF, IOCAF0
+	call ManejarPulsadorEmpezar
+	call ManejarPulsadorReset
 	return
 	
+ManejarCronometroEmpezo
+	call ManejarPulsadorPausa
+	call ManejarPulsadorReset
+	return
+
+ManejarPulsadorEmpezar
+	SiBotonFuePresionadoContinuar Boton_StartPausa
 	CambiarModo modo_cronometro_empezo
-	
-	banksel 	IOCAF
-	bcf 	IOCAF, IOCAF0
+
 	return
 
-CronometroPausa
-	banksel 	IOCAF
-	btfss 	IOCAF, IOCAF0
-	return
-	
+ManejarPulsadorPausa
+	SiBotonFuePresionadoContinuar Boton_StartPausa	
 	CambiarModo modo_cronometro_pausado
-	
-	banksel 	IOCAF
-	bcf 	IOCAF, IOCAF0
+
 	return
 
-ManejarReset
-	banksel 	IOCAF
-	btfss 	IOCAF, IOCAF1
-	return
-	
+ManejarPulsadorReset
+	SiBotonFuePresionadoContinuar Boton_Reset
 	CambiarModo modo_cronometro_pausado
-	
+		
 	call LimpiarRam
-	
-	banksel 	IOCAF
-	bcf 	IOCAF, IOCAF1
+
 	return
 
 Cronometro
@@ -149,7 +136,16 @@ ControlParpadeo
 	bsf 	control_7seg, 0
 	
 	return
-		
+
+ManejarTemporizadorConfiguracion
+	call ManejarPulsadorEnter
+	return	
+
+ManejarPulsadorEnter
+	SiBotonFuePresionadoContinuar Boton_MenuEnter
+	CambiarModo modo_cronometro_empezo
+	bcf	boleanos, estaParpadeando
+	return
 ;-----------------------	
 
 #include "Configuraciones.asm"
