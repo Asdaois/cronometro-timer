@@ -409,14 +409,19 @@ ManejarPulsadorAumentarMinutos
 			
 ManejarPulsadorAtras
 	SiBotonFuePresionadoContinuar Boton_Atras
+
 	btfsc	boleanos, esCronometro	
 	CambiarModo modo_cronometro_pausado
 	
 	btfss  	boleanos, esCronometro
 	CambiarModo modo_temporizador_pausado
 	
+	btfsc	boleanos, esCronometro
+	call	LimpiarRam
+	
 	btfss 	boleanos, esCronometro
 	call	GuardarConfiguracionTemporizador
+	
 	bcf	boleanos, estaParpadeando
 	return
 
