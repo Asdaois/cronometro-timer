@@ -33,6 +33,10 @@ ManejarTic
 	
 	SiModo modo_configuracion
 	call	ControlParpadeo
+	SiModo modo_configuracion_minutos
+	call	ControlParpadeo
+	SiModo modo_configuracion_segundos
+	call	ControlParpadeo
 	
 	bcf 	PIR1, TMR1IF ; Resetear manualmente
 	call 	IniciarTiempo
@@ -43,12 +47,11 @@ ManejarMostrarDisplay
 	; Revisar Timer1 Overflow Interrupt Flag bit
 	btfss 	INTCON, TMR0IF 
 	return 	; No se ha desbordado
+		
+	call 	Display
 	
 	btfsc	boleanos, estaParpadeando
-	call	DesactivarDisplay
-	
-	btfss 	boleanos, estaParpadeando
-	call 	Display
+	call	EnmascararPuntero
 	
 	call 	MostrarCronometroTemporizador
 	
@@ -56,31 +59,6 @@ ManejarMostrarDisplay
 	banksel 	TMR0
 	movlw	.240
 	movwf	TMR0; inicio nuevamente
-	return
-
-Cronometro
-	IncrementarYComparar centesimas_unidad, 0xA
-	btfss 	STATUS, Z 
-	return
-	
-	IncrementarYComparar centesimas_decima, 0xA
-	btfss 	STATUS, Z
-	return
-	
-	IncrementarYComparar segundos_unidad, 0xA
-	btfss 	STATUS, Z 
-	return
-	
-	IncrementarYComparar segundos_decima, 0x6
-	btfss 	STATUS, Z 
-	return
-	
-	IncrementarYComparar minutos_unidad, 0xA
-	btfss 	STATUS, Z 
-	return
-	
-	IncrementarYComparar minutos_decima, 0xA
-	; Maximos minutos a contar 99
 	return
 
 ControlParpadeo
@@ -92,51 +70,96 @@ ControlParpadeo
 	; Paso medio segundo
 	clrf 	tiempo_parpadeo
 	AlternarBit boleanos, estaParpadeando
-	
-	btfss	boleanos, estaParpadeando ; desactivar puntero
-	call 	DesactivarDisplay
-	
-	btfsc	boleanos, estaParpadeando ;Activar puntero
-	bsf 	control_7seg, 0
+	return
+
+EnmascararPuntero
+	SiModo modo_configuracion
+	call 	EnmascararTodosLosBits
+	SiModo modo_configuracion_segundos
+	call 	EnmascararSegundos
+	SiModo modo_configuracion_minutos
+	call 	EnmascararMinutos
+	return
+
+EnmascararTodosLosBits
+	banksel 	PORTB
+	clrf 	PORTB
+	return
+
+EnmascararSegundos
+	banksel PORTB
+	btfsc	PORTB, RB2
+	bcf	PORTB, RB2
+	btfsc	PORTB, RB3
+	bcf	PORTB, RB3
+	return
+
+EnmascararMinutos
+	banksel PORTB
+	btfsc	PORTB, RB4
+	bcf	PORTB, RB4
+	btfsc	PORTB, RB5
+	bcf	PORTB, RB5
 	return
 	
 ManejarModo
 	SiModo modo_cronometro_pausado
-	call 	ManejarCronometroPausado
+	call 	ManejarModoCronometroPausado
 	SiModo modo_cronometro_empezo
-	call	ManejarCronometroEmpezo
-	SiModo modo_configuracion
-	call 	ManejarConfiguracion
+	call	ManejarModoCronometroEmpezo
 	SiModo modo_temporizador_empezo
-	call 	ManejarTemporizadorCorriendo
+	call 	ManejarModoTemporizadorCorriendo
 	SiModo modo_temporizador_pausado
-	call	ManejarTemporizadorPausado
+	call	ManejarModoTemporizadorPausado
+	
+	SiModo modo_configuracion
+	call 	ManejarModoConfiguracion
+	SiModo modo_configuracion_segundos
+	call 	ManejarModoConfiguracionSegundos
+	SiModo modo_configuracion_minutos
+	call 	ManejarModoConfiguracionMinutos
+	
 	return
 		
-ManejarCronometroPausado
+ManejarModoCronometroPausado
 	call ManejarPulsadorEmpezar
 	call ManejarPulsadorReset
 	call ManejarPulsadorConfiguracion
 	return
 	
-ManejarCronometroEmpezo
+ManejarModoCronometroEmpezo
 	call ManejarPulsadorPausa
 	call ManejarPulsadorReset
 	call ManejarPulsadorConfiguracion
 	return
 
-ManejarTemporizadorCorriendo
-	call ManejarPulsadorConfiguracion
-	return
-ManejarTemporizadorPausado
+ManejarModoTemporizadorCorriendo
 	call ManejarPulsadorConfiguracion
 	return
 	
-ManejarConfiguracion
+ManejarModoTemporizadorPausado
+	call ManejarPulsadorConfiguracion
+	return
+	
+ManejarModoConfiguracion
 	call AlternarCronometroTemporizador
 	call ManejarPulsadorAtras
+	call ManejarPulsadorArribaConfiguraSegundos
+	call ManejarPulsadorAbajoConfiguraMinutos
 	return
 
+ManejarModoConfiguracionSegundos
+	call ManejarPulsadorAtras
+	call ManejarPulsadorArribaConfiguraMinutos
+	call ManejarPulsadorAbajoConfiguraAlternar
+	return
+
+ManejarModoConfiguracionMinutos
+	call ManejarPulsadorAtras
+	call ManejarPulsadorArribaConfiguraAlterar
+	call ManejarPulsadorAbajoConfiguraSegundos
+	return
+	
 ManejarPulsadorAtras
 	SiBotonFuePresionadoContinuar Boton_Atras
 	btfsc	boleanos, esCronometro	
@@ -174,12 +197,36 @@ ManejarPulsadorReset
 
 	return
 
-ManejarPulsadorArriba
+ManejarPulsadorArribaConfiguraAlternar
+	SiBotonFuePresionadoContinuar Boton_Arriba
+	CambiarModo modo_configuracion
 	return
 
-ManejarPulsadorAbajo
+ManejarPulsadorArribaConfiguraSegundos
+	SiBotonFuePresionadoContinuar Boton_Arriba
+	CambiarModo modo_configuracion_segundos
+	return
+
+ManejarPulsadorArribaConfiguraMinutos
+	SiBotonFuePresionadoContinuar Boton_Arriba
+	CambiarModo modo_configuracion_minutos
 	return
 	
+ManejarPulsadorAbajoConfiguraAlternar
+	SiBotonFuePresionadoContinuar Boton_Abajo
+	CambiarModo modo_configuracion
+	return
+
+ManejarPulsadorAbajoConfiguraMinutos
+	SiBotonFuePresionadoContinuar Boton_Abajo
+	CambiarModo modo_configuracion_minutos
+	return
+
+ManejarPulsadorAbajoConfiguraSegundos
+	SiBotonFuePresionadoContinuar Boton_Abajo
+	CambiarModo modo_configuracion_segundos
+	return
+		
 MostrarCronometroTemporizador
 	banksel PORTB
 	btfsc boleanos, esCronometro
@@ -192,6 +239,31 @@ MostrarCronometroTemporizador
 AlternarCronometroTemporizador
 	SiBotonFuePresionadoContinuar Boton_MenuEnter
 	AlternarBit boleanos, esCronometro
+	return
+
+Cronometro
+	IncrementarYComparar centesimas_unidad, 0xA
+	btfss 	STATUS, Z 
+	return
+	
+	IncrementarYComparar centesimas_decima, 0xA
+	btfss 	STATUS, Z
+	return
+	
+	IncrementarYComparar segundos_unidad, 0xA
+	btfss 	STATUS, Z 
+	return
+	
+	IncrementarYComparar segundos_decima, 0x6
+	btfss 	STATUS, Z 
+	return
+	
+	IncrementarYComparar minutos_unidad, 0xA
+	btfss 	STATUS, Z 
+	return
+	
+	IncrementarYComparar minutos_decima, 0xA
+	; Maximos minutos a contar 99
 	return
 ;-----------------------	
 

@@ -53,7 +53,6 @@ ReiniciarPuntero
 	call ColocarPunteroAlInicio
 	return
 	
-
 ColocarPunteroAlInicio
 	movlw 	0x1
 	movwf	control_7seg
