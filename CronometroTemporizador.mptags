@@ -11,6 +11,7 @@ AlternarBit	C:\Users\josex\projects\assembler\cronometro-timer\CronometroTempori
 AlternarCronometroTemporizador	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	332;"	l	line:332
 AlternarIniciarPararTiempo	C:\Users\josex\projects\assembler\cronometro-timer\FuncionesTimer.asm	4;"	l	line:4
 BCD_7seg	C:\Users\josex\projects\assembler\cronometro-timer\7seg.asm	5;"	l	line:5
+BCD_7seg	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	508;"	l	line:508
 BancoConfiguracionTemporizador	C:\Users\josex\projects\assembler\cronometro-timer\RAM.inc	30;"	q	line:30
 Boton_Abajo	C:\Users\josex\projects\assembler\cronometro-timer\RAM.inc	28;"	q	line:28
 Boton_Arriba	C:\Users\josex\projects\assembler\cronometro-timer\RAM.inc	27;"	q	line:27
@@ -27,6 +28,7 @@ CargarMinutosUnidad	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	
 CargarSegundosDecima	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	447;"	l	line:447
 CargarSegundosUnidad	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	449;"	l	line:449
 ColocarPunteroAlInicio	C:\Users\josex\projects\assembler\cronometro-timer\7seg.asm	58;"	l	line:58
+ColocarPunteroAlInicio	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	561;"	l	line:561
 Comparar	C:\Users\josex\projects\assembler\cronometro-timer\CronometroTemporizadorMacros.inc	26;"	m	line:26
 Configuraciones	C:\Users\josex\projects\assembler\cronometro-timer\Configuraciones.asm	3;"	l	line:3
 Configurar	C:\Users\josex\projects\assembler\cronometro-timer\Configuraciones.asm	4;"	l	line:4
@@ -35,7 +37,9 @@ ConfigurarPuertos	C:\Users\josex\projects\assembler\cronometro-timer\Configuraci
 ControlParpadeo	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	87;"	l	line:87
 Cronometro	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	374;"	l	line:374
 DesactivarDisplay	C:\Users\josex\projects\assembler\cronometro-timer\7seg.asm	74;"	l	line:74
+DesactivarDisplay	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	577;"	l	line:577
 Display	C:\Users\josex\projects\assembler\cronometro-timer\7seg.asm	24;"	l	line:24
+Display	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	527;"	l	line:527
 EnmascararMinutos	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	127;"	l	line:127
 EnmascararPuntero	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	105;"	l	line:105
 EnmascararSegundos	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	119;"	l	line:119
@@ -78,6 +82,7 @@ ManejarPulsadorPausarTemporizador	C:\Users\josex\projects\assembler\cronometro-t
 ManejarPulsadorReset	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	271;"	l	line:271
 ManejarPulsadorResetTemporizador	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	278;"	l	line:278
 ManejarPuntero	C:\Users\josex\projects\assembler\cronometro-timer\7seg.asm	28;"	l	line:28
+ManejarPuntero	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	531;"	l	line:531
 ManejarTemporizadorCentesimasDecima	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	410;"	l	line:410
 ManejarTemporizadorCentesimasUnidad	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	404;"	l	line:404
 ManejarTemporizadorMinutosDecima	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	438;"	l	line:438
@@ -91,10 +96,13 @@ MostrarCronometroTemporizador	C:\Users\josex\projects\assembler\cronometro-timer
 MoverAF	C:\Users\josex\projects\assembler\cronometro-timer\CronometroTemporizadorMacros.inc	31;"	m	line:31
 MoverValorWSiCoincide	C:\Users\josex\projects\assembler\cronometro-timer\CronometroTemporizadorMacros.inc	20;"	m	line:20
 ObtenerValorEnW	C:\Users\josex\projects\assembler\cronometro-timer\7seg.asm	63;"	l	line:63
+ObtenerValorEnW	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	566;"	l	line:566
 PararTiempo	C:\Users\josex\projects\assembler\cronometro-timer\FuncionesTimer.asm	16;"	l	line:16
 PasarValorAlPuerto	C:\Users\josex\projects\assembler\cronometro-timer\7seg.asm	43;"	l	line:43
+PasarValorAlPuerto	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	546;"	l	line:546
 RST	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	9;"	l	line:9
 ReiniciarPuntero	C:\Users\josex\projects\assembler\cronometro-timer\7seg.asm	51;"	l	line:51
+ReiniciarPuntero	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	554;"	l	line:554
 ReiniciarTemporizador	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	226;"	l	line:226
 ReiniciarTimer	C:\Users\josex\projects\assembler\cronometro-timer\FuncionesTimer.asm	21;"	l	line:21
 SalirModoAlarma	C:\Users\josex\projects\assembler\cronometro-timer\main.asm	465;"	l	line:465
