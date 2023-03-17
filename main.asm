@@ -74,8 +74,15 @@ ManejarTicContador
 	
 	SiModo	modo_alarma
 	incf	tiempo_diez_segundos, F
-	return
 	
+	SiModo	modo_alarma	; alternar cada segundo
+	call 	AlternarAlarmaDisplay
+	return
+
+AlternarAlarmaDisplay
+	banksel PORTC
+	AlternarBit PORTC, RC1
+	return	
 ControlParpadeo
 	; Parpadear cada cierto tiempo
 	IncrementarYComparar tiempo_parpadeo, medio_segundo
