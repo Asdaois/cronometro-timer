@@ -1,7 +1,146 @@
 #include <p16f1787.inc>
-#include "RAM.inc"
-#include "CronometroTemporizadorMacros.inc"
 
+;--------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------
+;Constantes y definicion de memoria
+#define esCronometro 0
+#define estaConfigurando 1
+#define estaParpadeando 2
+#define parpadeo_ninugno 0x0
+#define parpadeo_todos 0x1
+#define parpadeo_segundos 0x2
+#define parpadeos_minutos 0x3
+#define medio_segundo 0x19 ; 50 ticks aproximadamente .5 segundos
+
+#define modo_cronometro_pausado 0x0
+#define modo_cronometro_empezo 0x1
+#define modo_temporizador_empezo 0x3
+#define modo_temporizador_pausado 0x4
+#define modo_configuracion 0x2
+#define modo_configuracion_segundos 0x5
+#define modo_configuracion_minutos 0x6
+#define modo_alarma 0x7
+
+Boton_StartPausa	equ	RA0
+Boton_Reset	equ	RA1
+Boton_MenuEnter	equ	RA2
+Boton_Arriba 	equ	RA3
+Boton_Abajo	equ	RA4
+Boton_Atras	equ	RA5
+BancoConfiguracionTemporizador	equ	PORTA	; Banco 0
+
+; Asigna valores en la ram comun desde 0x70
+CBLOCK 0x70
+	minutos_decima
+	minutos_unidad 
+	segundos_decima
+	segundos_unidad
+	centesimas_decima
+	centesimas_unidad 
+	control_7seg
+	valor_7seg
+	boleanos
+	tiempo_parpadeo
+	parpadeo_control
+	helper
+	modo
+	tics_contador		; 100 tics == 1 segundo
+	tiempo_diez_segundos	; idealmente debera tener un valor de 10, aumenta cada 100 tics
+ENDC
+
+; Asigna valores en la memoria general del banco 0
+CBLOCK 0x20
+	temporizador_minutos_decima
+	temporizador_minutos_unidad 
+	temporizador_segundos_decima
+	temporizador_segundos_unidad
+ENDC
+;--------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------
+;Macros; para facilitar la escritura del codigo
+
+; Incrementa un valor en una direccion
+; Luego compara si ese valor es igual a un numero
+; Si el numero es igual convierte el valor a 0
+; Se utiliza para programar la funcionalidad basica del cronometro
+; Ejemplo:
+;	Si el valor es 9
+; 		Aumenta el valor a 10
+;		Si el valor es 10
+;			Convierte el valor a 0
+IncrementarYComparar macro registro, numero_comparar
+	incf 	registro, F
+	movf 	registro, W
+	xorlw 	numero_comparar	; verifico si es igual a comparacion
+	btfsc 	STATUS, Z 	; si son iguales limpia el numero			; regresa
+	clrf	registro		; Limpia el numero
+	endm
+
+SiEsCero macro numero ; agregar 1 al valor para configurar
+	movf	numero, W
+	xorlw	0x0
+	btfsc 	STATUS, Z 	; si son iguales cambia el numero
+	endm
+
+MoverValorWSiCoincide macro numero, direccion
+	btfsc control_7seg, numero
+	movf direccion, W
+	endm
+
+; Si los numeros son iguales entoces Z en status es zero
+Comparar macro numero, comparacion
+	movf	numero, W
+	xorlw	comparacion
+	endm
+
+MoverAF macro registro, literal
+	movlw 	literal
+	movwf	registro
+	endm
+
+CambiarModo macro modo_nuevo
+	movlw 	modo_nuevo
+	movwf	modo
+	banksel 	IOCAF
+	clrf 	IOCAF
+	endm
+
+AlternarBit macro registro, bit
+	clrf 	helper	; Limpiar helper
+	bsf 	helper, bit	; Setear el bit
+	movf	helper, W	; pasarlo a w
+	xorwf 	registro, F	; xor operacion
+	; si bit esta en 1 -> 0
+	; si bit esta en 0 -> 1
+	; el resto no se modifican
+	endm
+
+SiModo macro literal
+	movf	modo, W
+	xorlw	literal
+	btfss	STATUS, Z
+	goto $+2
+	endm
+
+SiBotonFuePresionadoContinuar macro boton
+	banksel 	IOCAF
+	btfss 	IOCAF, boton
+	return
+	
+	banksel 	IOCAF
+	bcf 	IOCAF, boton	
+	endm
+;--------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------
 ;CONFIG1 & CONFIG2
 __CONFIG _CONFIG1, _FOSC_INTOSC & _WDTE_OFF & _PWRTE_OFF & _MCLRE_ON & _CP_OFF & _CPD_OFF & _BOREN_ON & _CLKOUTEN_OFF & _IESO_ON & _FCMEN_ON
 __CONFIG _CONFIG2, _WRT_OFF & _VCAPEN_OFF & _PLLEN_ON & _STVREN_ON & _BORV_LO & _LPBOR_OFF & _LVP_ON
