@@ -22,13 +22,6 @@ BCD_7seg
 	retlw 	0x7F; apagar todos los displays
 
 Display	
-	call	ObtenerValorEnW
-	
-	movf 	valor_7seg, W
-	call 	BCD_7seg
-	banksel 	PORTD
-	movwf	PORTD
-	
 	call 	ManejarPuntero
 	return	
 
@@ -37,6 +30,7 @@ ManejarPuntero
 	banksel 	PORTB
 	movwf 	PORTB
 	
+	call PasarValorAlPuerto
 	call ReiniciarPuntero
 	
 	rlf 	control_7seg, F
@@ -46,6 +40,14 @@ ManejarPuntero
 	call ColocarPunteroAlInicio
 	return
 
+PasarValorAlPuerto
+	call	ObtenerValorEnW
+	
+	movf 	valor_7seg, W
+	call 	BCD_7seg
+	banksel 	PORTD
+	movwf	PORTD
+	return
 ReiniciarPuntero
 	Comparar	control_7seg, 0x0
 	btfss	STATUS, Z
