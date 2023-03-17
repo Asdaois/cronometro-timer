@@ -17,8 +17,8 @@ Start
 	goto 	Loop
 Loop
 	call 	ManejarTic
+	call 	ManejarTicLargo ; Timer 0 suficientemente rapido para hacer barrido del display
 	call 	ManejarModo
-	call 	ManejarMostrarDisplay
 	goto 	Loop
 
 ManejarTic
@@ -42,7 +42,7 @@ ManejarTic
 	call 	IniciarTiempo
 	return
 
-ManejarMostrarDisplay
+ManejarTicLargo
 	banksel 	INTCON
 	; Revisar Timer1 Overflow Interrupt Flag bit
 	btfss 	INTCON, TMR0IF 
@@ -54,22 +54,30 @@ ManejarMostrarDisplay
 	call	EnmascararPuntero
 	
 	call 	MostrarCronometroTemporizador
-	
+
 	bcf 	INTCON, TMR0IF ; Resetear manualmente
 	banksel 	TMR0
 	movlw	.240
 	movwf	TMR0; inicio nuevamente
 	return
-
+	
+	
 ControlParpadeo
 	; Parpadear cada cierto tiempo
 	IncrementarYComparar tiempo_parpadeo, medio_segundo
 	btfss 	STATUS, Z	
-	return	;No ha llegado a medio segundo
+	return
 	
 	; Paso medio segundo
 	clrf 	tiempo_parpadeo
 	AlternarBit boleanos, estaParpadeando
+	
+	; Estoy usandolo como medida de tiempo
+	SiModo	modo_configuracion_minutos
+	call 	ManejarPulsadorAumentarMinutosContinuo
+	
+	SiModo	modo_configuracion_segundos
+	call 	ManejarPulsadorAumentarSegundosContinuo
 	return
 
 EnmascararPuntero
@@ -122,44 +130,56 @@ ManejarModo
 	return
 		
 ManejarModoCronometroPausado
-	call ManejarPulsadorEmpezar
-	call ManejarPulsadorReset
-	call ManejarPulsadorConfiguracion
+	call 	ManejarPulsadorEmpezar
+	call 	ManejarPulsadorReset
+	call 	ManejarPulsadorConfiguracion
 	return
 	
 ManejarModoCronometroEmpezo
-	call ManejarPulsadorPausa
-	call ManejarPulsadorReset
-	call ManejarPulsadorConfiguracion
+	call 	ManejarPulsadorPausa
+	call 	ManejarPulsadorReset
+	call 	ManejarPulsadorConfiguracion
 	return
 
 ManejarModoTemporizadorCorriendo
-	call ManejarPulsadorConfiguracion
+	call 	ManejarPulsadorConfiguracion
 	return
 	
 ManejarModoTemporizadorPausado
-	call ManejarPulsadorConfiguracion
+	call 	ManejarPulsadorConfiguracion
 	return
 	
 ManejarModoConfiguracion
-	call AlternarCronometroTemporizador
-	call ManejarPulsadorAtras
-	call ManejarPulsadorArribaConfiguraSegundos
-	call ManejarPulsadorAbajoConfiguraMinutos
+	call 	AlternarCronometroTemporizador
+	call 	ManejarPulsadorAtras
+	call 	ManejarPulsadorArribaConfiguraSegundos
+	call 	ManejarPulsadorAbajoConfiguraMinutos
 	return
 
 ManejarModoConfiguracionSegundos
-	call ManejarPulsadorAtras
-	call ManejarPulsadorArribaConfiguraMinutos
-	call ManejarPulsadorAbajoConfiguraAlternar
+	call 	ManejarPulsadorAumentarSegundos
+	call 	ManejarPulsadorAtras
+	call 	ManejarPulsadorArribaConfiguraMinutos
+	call 	ManejarPulsadorAbajoConfiguraAlternar
 	return
 
 ManejarModoConfiguracionMinutos
-	call ManejarPulsadorAtras
-	call ManejarPulsadorArribaConfiguraAlterar
-	call ManejarPulsadorAbajoConfiguraSegundos
+	call 	ManejarPulsadorAumentarSegundos
+	call 	ManejarPulsadorAtras
+	call 	ManejarPulsadorArribaConfiguraAlterar
+	call 	ManejarPulsadorAbajoConfiguraSegundos
 	return
-	
+
+ManejarPulsadorAumentarSegundos
+	SiBotonFuePresionadoContinuar Boton_MenuEnter
+	call IncrementarSegundos
+	return
+
+ManejarPulsadorAumentarMinutos
+	SiBotonFuePresionadoContinuar Boton_MenuEnter
+	call IncrementarMinutos
+	return
+			
 ManejarPulsadorAtras
 	SiBotonFuePresionadoContinuar Boton_Atras
 	btfsc	boleanos, esCronometro	
@@ -241,6 +261,43 @@ AlternarCronometroTemporizador
 	AlternarBit boleanos, esCronometro
 	return
 
+ManejarPulsadorAumentarSegundosContinuo
+	banksel 	PORTA
+	btfsc	PORTA, Boton_MenuEnter
+	return
+	; No me gusta esto pero tengo que garantizar que siga activa la interrupcion
+	banksel 	IOCAF
+	clrf 	IOCAF 
+	call IncrementarSegundos
+	return
+
+IncrementarSegundos	
+	IncrementarYComparar segundos_unidad, 0xA
+	btfss 	STATUS, Z 
+	return
+	
+	IncrementarYComparar segundos_decima, 0x6
+	return
+
+ManejarPulsadorAumentarMinutosContinuo
+	banksel 	PORTA
+	btfsc	PORTA, Boton_MenuEnter
+	return
+	; No me gusta esto pero tengo que garantizar que siga activa la interrupcion
+	banksel 	IOCAF
+	clrf 	IOCAF 
+	call IncrementarMinutos
+	return
+	
+IncrementarMinutos	
+	IncrementarYComparar minutos_unidad, 0xA
+	btfss 	STATUS, Z 
+	return
+	
+	IncrementarYComparar minutos_decima, 0xA
+	; Maximos minutos a contar 99
+	return
+		
 Cronometro
 	IncrementarYComparar centesimas_unidad, 0xA
 	btfss 	STATUS, Z 
