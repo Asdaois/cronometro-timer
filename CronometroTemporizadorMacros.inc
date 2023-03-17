@@ -36,6 +36,8 @@ MoverAF macro registro, literal
 CambiarModo macro modo_nuevo
 	movlw 	modo_nuevo
 	movwf	modo
+	banksel 	IOCAF
+	clrf 	IOCAF
 	endm
 
 AlternarBit macro registro, bit

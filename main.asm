@@ -83,6 +83,7 @@ AlternarAlarmaDisplay
 	banksel PORTC
 	AlternarBit PORTC, RC1
 	return	
+	
 ControlParpadeo
 	; Parpadear cada cierto tiempo
 	IncrementarYComparar tiempo_parpadeo, medio_segundo
@@ -197,6 +198,7 @@ ManejarModoConfiguracionMinutos
 
 ManejarModoAlarma
 	call	ManejarAlarmaVencioDiezSegundos
+	call	ManejarCualquierBotonFuePresionado
 	return
 
 ManejarAlarmaVencioDiezSegundos
@@ -208,9 +210,23 @@ ManejarAlarmaVencioDiezSegundos
 	call	ReiniciarTemporizador
 	return
 
+ManejarCualquierBotonFuePresionado
+	banksel 	IOCAF
+	Comparar IOCAF, 0x00
+	btfsc 	STATUS, Z	; Si es 0 un boton fue presionado
+	return
+	
+	call	SalirModoAlarma
+	call	ReiniciarTemporizador
+	banksel 	IOCAF
+	clrf 	IOCAF
+	return
+	
 ReiniciarTemporizador
 	CambiarModo modo_temporizador_pausado
+	call	CargarConfiguracionTemporizador
 	return
+	
 ManejarPulsadorAumentarSegundos
 	SiBotonFuePresionadoContinuar Boton_MenuEnter
 	call IncrementarSegundos
@@ -229,6 +245,8 @@ ManejarPulsadorAtras
 	btfss  	boleanos, esCronometro
 	CambiarModo modo_temporizador_pausado
 	
+	btfss 	boleanos, esCronometro
+	call	GuardarConfiguracionTemporizador
 	bcf	boleanos, estaParpadeando
 	return
 
@@ -256,6 +274,12 @@ ManejarPulsadorReset
 
 	return
 
+ManejarPulsadorResetTemporizador
+	SiBotonFuePresionadoContinuar Boton_Reset
+	CambiarModo modo_temporizador_pausado
+	call CargarConfiguracionTemporizador
+
+	return
 ManejarPulsadorIniciarTemporizador
 	SiBotonFuePresionadoContinuar Boton_StartPausa	
 	CambiarModo modo_temporizador_empezo
@@ -440,8 +464,32 @@ CambiarAModoAlarma
 
 SalirModoAlarma
 	; Solo garantiza que el display este apagado
-	banksel PORTC
-	bcf PORTC, RC1
+	banksel 	PORTC
+	bcf 	PORTC, RC1
+	return
+
+GuardarConfiguracionTemporizador
+	banksel	BancoConfiguracionTemporizador	; Seleccionar banco 0 
+	movf	minutos_decima, W
+	movwf	temporizador_minutos_decima
+	movf	minutos_unidad, W 
+	movwf	temporizador_minutos_unidad
+	movf	segundos_decima, W
+	movwf	temporizador_segundos_decima
+	movf	segundos_unidad, W
+	movwf	temporizador_segundos_unidad
+	return
+	
+CargarConfiguracionTemporizador
+	banksel	BancoConfiguracionTemporizador	; Seleccionar banco 0 
+	movf	temporizador_minutos_decima, W
+	movwf	minutos_decima
+	movf	temporizador_minutos_unidad, W 
+	movwf	minutos_unidad	
+	movf	temporizador_segundos_decima, W
+	movwf	segundos_decima
+	movf	temporizador_segundos_unidad, W
+	movwf	segundos_unidad
 	return
 ;-----------------------	
 

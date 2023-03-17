@@ -27,6 +27,7 @@ Boton_MenuEnter	equ	RA2
 Boton_Arriba 	equ	RA3
 Boton_Abajo	equ	RA4
 Boton_Atras	equ	RA5
+BancoConfiguracionTemporizador	equ	PORTA	; Banco 0
 
 ; Asigna valores en la ram comun desde 0x20
 	CBLOCK 0x70
@@ -45,5 +46,12 @@ Boton_Atras	equ	RA5
 	modo
 	tics_contador		; 100 tics == 1 segundo
 	tiempo_diez_segundos	; idealmente debera tener un valor de 10, aumenta cada 100 tics
+	ENDC
+	
+	CBLOCK 0x20 ; Memoria de acceso general
+	temporizador_minutos_decima
+	temporizador_minutos_unidad 
+	temporizador_segundos_decima
+	temporizador_segundos_unidad
 	ENDC
 #endif
