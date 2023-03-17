@@ -44,6 +44,13 @@ Toggle
 Boton Reinicio
 -1
 --
+Pin
+RA2
+Pulse Low
+1 sec
+
+4
+--
 &
 ## ADVANCEDSCL
 

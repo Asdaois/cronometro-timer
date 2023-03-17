@@ -11,6 +11,12 @@ IncrementarYComparar macro numero, comparacion
 	clrf	numero		; Limpia el numero
 	endm
 
+SiEsCero macro numero ; agregar 1 al valor para configurar
+	movf	numero, W
+	xorlw	0x0
+	btfsc 	STATUS, Z 	; si son iguales cambia el numero
+	endm
+
 MoverValorWSiCoincide macro numero, direccion
 	btfsc control_7seg, numero
 	movf direccion, W

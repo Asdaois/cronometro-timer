@@ -30,6 +30,8 @@ ManejarTic
 	
 	SiModo modo_cronometro_empezo
 	call 	Cronometro
+	SiModo modo_temporizador_empezo
+	call	Temporizador
 	
 	SiModo modo_configuracion
 	call	ControlParpadeo
@@ -147,6 +149,7 @@ ManejarModoTemporizadorCorriendo
 	
 ManejarModoTemporizadorPausado
 	call 	ManejarPulsadorConfiguracion
+	call	ManejarPulsadorIniciarTemporizador
 	return
 	
 ManejarModoConfiguracion
@@ -206,17 +209,20 @@ ManejarPulsadorEmpezar
 ManejarPulsadorPausa
 	SiBotonFuePresionadoContinuar Boton_StartPausa	
 	CambiarModo modo_cronometro_pausado
-
 	return
-
+	
 ManejarPulsadorReset
 	SiBotonFuePresionadoContinuar Boton_Reset
 	CambiarModo modo_cronometro_pausado
-		
 	call LimpiarRam
 
 	return
 
+ManejarPulsadorIniciarTemporizador
+	SiBotonFuePresionadoContinuar Boton_StartPausa	
+	CambiarModo modo_temporizador_empezo
+	return
+	
 ManejarPulsadorArribaConfiguraAlternar
 	SiBotonFuePresionadoContinuar Boton_Arriba
 	CambiarModo modo_configuracion
@@ -321,6 +327,69 @@ Cronometro
 	
 	IncrementarYComparar minutos_decima, 0xA
 	; Maximos minutos a contar 99
+	return
+
+Temporizador
+	goto ManejarTemporizadorCentesimasUnidad		
+TemporizadorFin
+	return
+	
+ManejarTemporizadorCentesimasUnidad
+	SiEsCero	centesimas_unidad
+	goto ManejarTemporizadorCentesimasDecima
+	decf centesimas_unidad, F
+	goto TemporizadorFin	
+	
+ManejarTemporizadorCentesimasDecima
+	SiEsCero	centesimas_decima
+	goto ManejarTemporizadorSegundosUnidad
+	call CargarMilisegundosUnidad
+	decf centesimas_decima, F 
+	goto TemporizadorFin
+
+ManejarTemporizadorSegundosUnidad
+	SiEsCero	segundos_unidad
+	goto ManejarTemporizadorSegundosDecima
+	call CargarMilisegundosDecima
+	decf segundos_unidad, F 
+	goto TemporizadorFin
+
+ManejarTemporizadorSegundosDecima
+	SiEsCero	segundos_decima
+	goto ManejarTemporizadorMinutosUnidad
+	call CargarSegundosUnidad
+	decf segundos_decima, F 
+	goto TemporizadorFin
+	
+ManejarTemporizadorMinutosUnidad
+	SiEsCero	minutos_unidad
+	goto ManejarTemporizadorMinutosDecima
+	call CargarSegundosDecima
+	decf minutos_unidad, F 
+	goto TemporizadorFin
+
+ManejarTemporizadorMinutosDecima
+	SiEsCero	minutos_decima
+	goto CambiarAModoAlarma
+	call CargarMinutosUnidad
+	decf minutos_decima, F 
+	goto TemporizadorFin
+
+CargarMinutosUnidad
+	MoverAF minutos_unidad, 0x9
+CargarSegundosDecima
+	MoverAF segundos_decima, 0x5
+CargarSegundosUnidad
+	MoverAF segundos_unidad, 0x9	
+CargarMilisegundosDecima
+	MoverAF centesimas_decima, 0x9
+CargarMilisegundosUnidad
+	MoverAF centesimas_unidad, 0x9
+	return
+
+CambiarAModoAlarma
+	banksel PORTC
+	bsf PORTC, RC1
 	return
 ;-----------------------	
 
