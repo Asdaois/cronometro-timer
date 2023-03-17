@@ -43,5 +43,7 @@ Boton_Atras	equ	RA5
 	parpadeo_control
 	helper
 	modo
+	tics_contador		; 100 tics == 1 segundo
+	tiempo_diez_segundos	; idealmente debera tener un valor de 10, aumenta cada 100 tics
 	ENDC
 #endif

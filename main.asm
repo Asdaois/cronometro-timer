@@ -16,8 +16,9 @@ Start
 	bsf	boleanos, esCronometro
 	goto 	Loop
 Loop
-	call 	ManejarTic
-	call 	ManejarTicLargo ; Timer 0 suficientemente rapido para hacer barrido del display
+	call 	ManejarTic	; Timer 1 aproximadamente 0.01
+	call 	ManejarTicLargo 	; Timer 0 suficientemente rapido para hacer barrido del display
+	call	ManejarTicContador
 	call 	ManejarModo
 	goto 	Loop
 
@@ -28,6 +29,7 @@ ManejarTic
 	btfss	PIR1,TMR1IF 
 	return	; No se ha desbordado
 	
+	incf	tics_contador	; Contar numeros de tic actuales
 	SiModo modo_cronometro_empezo
 	call 	Cronometro
 	SiModo modo_temporizador_empezo
@@ -62,7 +64,17 @@ ManejarTicLargo
 	movlw	.240
 	movwf	TMR0; inicio nuevamente
 	return
+
+ManejarTicContador
+	Comparar tics_contador, 0x64	; cada 1 segundo	
+	btfss	STATUS, Z	; si no es igual a 100
+	return
 	
+	clrf tics_contador	; restear contador
+	
+	SiModo	modo_alarma
+	incf	tiempo_diez_segundos, F
+	return
 	
 ControlParpadeo
 	; Parpadear cada cierto tiempo
@@ -129,6 +141,8 @@ ManejarModo
 	SiModo modo_configuracion_minutos
 	call 	ManejarModoConfiguracionMinutos
 	
+	SiModo modo_alarma
+	Call	ManejarModoAlarma
 	return
 		
 ManejarModoCronometroPausado
@@ -174,6 +188,22 @@ ManejarModoConfiguracionMinutos
 	call 	ManejarPulsadorAbajoConfiguraSegundos
 	return
 
+ManejarModoAlarma
+	call	ManejarAlarmaVencioDiezSegundos
+	return
+
+ManejarAlarmaVencioDiezSegundos
+	Comparar tiempo_diez_segundos, 0xA	;Pasaron 10 segundos?
+	btfss	STATUS, Z
+	return  ; No han pasado
+	
+	call 	SalirModoAlarma
+	call	ReiniciarTemporizador
+	return
+
+ReiniciarTemporizador
+	CambiarModo modo_temporizador_pausado
+	return
 ManejarPulsadorAumentarSegundos
 	SiBotonFuePresionadoContinuar Boton_MenuEnter
 	call IncrementarSegundos
@@ -397,9 +427,11 @@ CambiarAModoAlarma
 	banksel PORTC
 	bsf PORTC, RC1
 	CambiarModo modo_alarma
+	
+	clrf	tiempo_diez_segundos ;reiniciar
 	return
 
-SalirModoALarma
+SalirModoAlarma
 	; Solo garantiza que el display este apagado
 	banksel PORTC
 	bcf PORTC, RC1
