@@ -82,35 +82,51 @@ IncrementarYComparar macro registro, numero_comparar
 	clrf	registro		; Limpia el numero
 	endm
 
-SiEsCero macro numero ; agregar 1 al valor para configurar
-	movf	numero, W
+; Compara si el valor dentro de un registro es igual a 0
+; Si no es cero salta la siguiente instruccion
+; motivacion: Escribir esta comparacion a cada rato es ladilloso
+; Ejemplo:
+;	Si el valor de segundos es 0
+;		Pedir prestado a minutos
+;	Si no
+;		segundos--
+SiEsCero macro registro ; agregar 1 al valor para configurar
+	movf	registro, W
 	xorlw	0x0
 	btfsc 	STATUS, Z 	; si son iguales cambia el numero
 	endm
 
-MoverValorWSiCoincide macro numero, direccion
+; control_7seg: el valor actual del puntero que se utiliza para actualizar los 7segmentos
+; numero: el bit actual en que se encuentra el control_7seg se usa para propositos ed comparacion
+; registro: el registro en donde se encuentra el valor actual que deberia tener el 7segmentos
+; Ejemplo:
+;	Si el bit actual es 2 ("correspondiente a segundos unidad")
+;		Mueve el valor de segundos unidad a W
+;	Si no
+;		No hacer nada
+MoverValorWSiCoincide macro numero, registro
 	btfsc control_7seg, numero
-	movf direccion, W
+	movf registro, W
 	endm
-
+	
+; Realiza una comparacion usando XOR
+; Usa el valor que se encuentra en un registro, 
+; Y un literal numero a comparar para realizar una comparacion de valores
 ; Si los numeros son iguales entoces Z en status es zero
-Comparar macro numero, comparacion
-	movf	numero, W
-	xorlw	comparacion
+; Motivacion: Comparar es una operacion muy comun
+Comparar macro registro, numero_comparar
+	movf	registro, W
+	xorlw	numero_comparar
 	endm
 
+; Mueve el valor de un literal a un registro
 MoverAF macro registro, literal
 	movlw 	literal
 	movwf	registro
 	endm
 
-CambiarModo macro modo_nuevo
-	movlw 	modo_nuevo
-	movwf	modo
-	banksel 	IOCAF
-	clrf 	IOCAF
-	endm
-
+; Alternar el valor de un bit, es una operacion bastante larga
+; Con esto podemos alternar el valor de un bit dentro de un registro cualquiera
 AlternarBit macro registro, bit
 	clrf 	helper	; Limpiar helper
 	bsf 	helper, bit	; Setear el bit
@@ -121,9 +137,23 @@ AlternarBit macro registro, bit
 	; el resto no se modifican
 	endm
 
-SiModo macro literal
+; El codigo funciona haciendo una maquina de estado simple
+; Para cambiar el modo de funcionamiento actual se utiliza este macro	
+CambiarModo macro modo_nuevo
+	movlw 	modo_nuevo
+	movwf	modo
+	banksel 	IOCAF
+	clrf 	IOCAF
+	endm
+
+; Se creo un If bloque
+; Basicamente pregunta si el modo es diferente al modo actual
+; Se puede utilizar Comparar, pero como el modo de funcionamiento siempre esta en la direccion de modo
+; este metodo es preferible, si el 	modo a comparar es distinto al actual
+; la siguiente instruccion es saltada	
+SiModo macro modo_actual
 	movf	modo, W
-	xorlw	literal
+	xorlw	modo_actual
 	btfss	STATUS, Z
 	goto $+2
 	endm
