@@ -164,7 +164,7 @@ ManejarModoConfiguracionSegundos
 	return
 
 ManejarModoConfiguracionMinutos
-	call 	ManejarPulsadorAumentarSegundos
+	call 	ManejarPulsadorAumentarMinutos
 	call 	ManejarPulsadorAtras
 	call 	ManejarPulsadorArribaConfiguraAlterar
 	call 	ManejarPulsadorAbajoConfiguraSegundos
