@@ -168,11 +168,13 @@ ManejarModoCronometroEmpezo
 ManejarModoTemporizadorCorriendo
 	call 	ManejarPulsadorConfiguracion
 	call	ManejarPulsadorPausarTemporizador
+	call	ManejarPulsadorResetTemporizador	;Esto cambia el temporizador a modo pausado
 	return
 	
 ManejarModoTemporizadorPausado
 	call 	ManejarPulsadorConfiguracion
 	call	ManejarPulsadorIniciarTemporizador
+	call	ManejarPulsadorResetTemporizador
 	return
 	
 ManejarModoConfiguracion
@@ -216,10 +218,9 @@ ManejarCualquierBotonFuePresionado
 	btfsc 	STATUS, Z	; Si es 0 un boton fue presionado
 	return
 	
-	call	SalirModoAlarma
+	; Cada vez que se cambia el modo se limpia las interrupciones
+	call	SalirModoAlarma	
 	call	ReiniciarTemporizador
-	banksel 	IOCAF
-	clrf 	IOCAF
 	return
 	
 ReiniciarTemporizador
@@ -276,10 +277,9 @@ ManejarPulsadorReset
 
 ManejarPulsadorResetTemporizador
 	SiBotonFuePresionadoContinuar Boton_Reset
-	CambiarModo modo_temporizador_pausado
-	call CargarConfiguracionTemporizador
-
+	call	ReiniciarTemporizador
 	return
+	
 ManejarPulsadorIniciarTemporizador
 	SiBotonFuePresionadoContinuar Boton_StartPausa	
 	CambiarModo modo_temporizador_empezo
@@ -490,6 +490,8 @@ CargarConfiguracionTemporizador
 	movwf	segundos_decima
 	movf	temporizador_segundos_unidad, W
 	movwf	segundos_unidad
+	clrf	centesimas_decima
+	clrf	centesimas_unidad
 	return
 ;-----------------------	
 
