@@ -158,6 +158,13 @@ SiModo macro modo_actual
 	goto $+2
 	endm
 
+; Este Macro revisa si se un boton fue presionado
+; Esto funciona si configura el puerto como interrupcion
+; Si un boton fue presionado 
+;	Limpia la interrupcion
+;	Continua ejecuntando codigo
+; Si ningun boton fue presionado:
+;	Retorna la ultima llamada de stack ("pendiente de tener un goto y causar un stack underflow")
 SiBotonFuePresionadoContinuar macro boton
 	banksel 	IOCAF
 	btfss 	IOCAF, boton
@@ -187,7 +194,7 @@ Start
 Loop
 	call 	ManejarTic	; Timer 1 aproximadamente 0.01
 	call 	ManejarTicLargo 	; Timer 0 suficientemente rapido para hacer barrido del display
-	call	ManejarTicContador
+	call	ManejarTicContador; Usado para contar cada 1 segundo aproximadamente 100 llamadas del Timer 1
 	call 	ManejarModo
 	goto 	Loop
 
@@ -221,9 +228,9 @@ ManejarTicLargo
 	btfss 	INTCON, TMR0IF 
 	return 	; No se ha desbordado
 		
-	call 	Display
+	call 	Display	;Muestra el 7 segmento, siempre esta funcionando
 	
-	btfsc	boleanos, estaParpadeando
+	btfsc	boleanos, estaParpadeando	; Controla el parpadeo global, de minutos y segundos
 	call	EnmascararPuntero
 	
 	call 	MostrarCronometroTemporizador
@@ -272,6 +279,11 @@ ControlParpadeo
 	return
 
 EnmascararPuntero
+	; Controla el parpadeo global, de minutos y segundos
+	; Esto funcina enmascarando el puntero que activa la los 7segmentos
+	; Esto se realiza revisando si un pin esta activo, y convirtiendolo a zero
+	; en el caso de segundos y minutos, es manual
+	; en el caso de parpadeo global, todo el puerto es forzado a cero
 	SiModo modo_configuracion
 	call 	EnmascararTodosLosBits
 	SiModo modo_configuracion_segundos
@@ -302,6 +314,7 @@ EnmascararMinutos
 	return
 	
 ManejarModo
+	; Maquina de estado, cada modo tiene su propia configuracion de los botones
 	SiModo modo_cronometro_pausado
 	call 	ManejarModoCronometroPausado
 	SiModo modo_cronometro_empezo
@@ -524,6 +537,7 @@ IncrementarSegundos
 	return
 	
 	IncrementarYComparar segundos_decima, 0x6
+	; Maximos segundos a contar 59
 	return
 
 ManejarPulsadorAumentarMinutosContinuo
@@ -546,6 +560,9 @@ IncrementarMinutos
 	return
 		
 Cronometro
+	; Cronometro
+	; Va aumentando los numeros, y cuando un numero es cero
+	; aumenta el numero siguiente
 	IncrementarYComparar centesimas_unidad, 0xA
 	btfss 	STATUS, Z 
 	return
@@ -571,6 +588,12 @@ Cronometro
 	return
 
 Temporizador
+	; Temporizador
+	; Funciona pidiendo prestado numeros a las unidades mas altas
+	; basicamente es una resta manual de todos los numeros
+	; decimas pide prestado a segundos
+	; segundos pide prestado a minutos
+	; Si todas las unidades son cero entonces cambia a modo de alarma
 	goto ManejarTemporizadorCentesimasUnidad		
 TemporizadorFin
 	return
@@ -616,6 +639,7 @@ ManejarTemporizadorMinutosDecima
 	decf minutos_decima, F 
 	goto TemporizadorFin
 
+; Manejar Numeros prestado
 CargarMinutosUnidad
 	MoverAF minutos_unidad, 0x9
 CargarSegundosDecima
