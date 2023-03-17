@@ -14,9 +14,11 @@
 
 #define modo_cronometro_pausado 0x0
 #define modo_cronometro_empezo 0x1
-#define modo_configuracion 0x2
 #define modo_temporizador_empezo 0x3
 #define modo_temporizador_pausado 0x4
+#define modo_configuracion 0x2
+#define modo_configuracion_segundos 0x5
+#define modo_configuracion_minutos 0x6
 
 Boton_StartPausa	equ	RA0
 Boton_Reset	equ	RA1

@@ -50,19 +50,12 @@ ManejarMostrarDisplay
 	btfss 	boleanos, estaParpadeando
 	call 	Display
 	
+	call 	MostrarCronometroTemporizador
+	
 	bcf 	INTCON, TMR0IF ; Resetear manualmente
 	banksel 	TMR0
-	movlw	.220
+	movlw	.240
 	movwf	TMR0; inicio nuevamente
-	return
-	
-ManejarModo
-	SiModo modo_cronometro_pausado
-	call 	ManejarCronometroPausado
-	SiModo modo_cronometro_empezo
-	call	ManejarCronometroEmpezo
-	SiModo modo_configuracion
-	call 	ManejarConfiguracion
 	return
 
 Cronometro
@@ -105,9 +98,21 @@ ControlParpadeo
 	
 	btfsc	boleanos, estaParpadeando ;Activar puntero
 	bsf 	control_7seg, 0
-	
 	return
 	
+ManejarModo
+	SiModo modo_cronometro_pausado
+	call 	ManejarCronometroPausado
+	SiModo modo_cronometro_empezo
+	call	ManejarCronometroEmpezo
+	SiModo modo_configuracion
+	call 	ManejarConfiguracion
+	SiModo modo_temporizador_empezo
+	call 	ManejarTemporizadorCorriendo
+	SiModo modo_temporizador_pausado
+	call	ManejarTemporizadorPausado
+	return
+		
 ManejarCronometroPausado
 	call ManejarPulsadorEmpezar
 	call ManejarPulsadorReset
@@ -119,8 +124,16 @@ ManejarCronometroEmpezo
 	call ManejarPulsadorReset
 	call ManejarPulsadorConfiguracion
 	return
+
+ManejarTemporizadorCorriendo
+	call ManejarPulsadorConfiguracion
+	return
+ManejarTemporizadorPausado
+	call ManejarPulsadorConfiguracion
+	return
 	
 ManejarConfiguracion
+	call AlternarCronometroTemporizador
 	call ManejarPulsadorAtras
 	return
 
@@ -159,6 +172,26 @@ ManejarPulsadorReset
 		
 	call LimpiarRam
 
+	return
+
+ManejarPulsadorArriba
+	return
+
+ManejarPulsadorAbajo
+	return
+	
+MostrarCronometroTemporizador
+	banksel PORTB
+	btfsc boleanos, esCronometro
+	bsf PORTC, RC0
+	
+	btfss boleanos, esCronometro
+	bcf PORTC, RC0
+	return
+
+AlternarCronometroTemporizador
+	SiBotonFuePresionadoContinuar Boton_MenuEnter
+	AlternarBit boleanos, esCronometro
 	return
 ;-----------------------	
 
