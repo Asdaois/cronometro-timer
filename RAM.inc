@@ -19,6 +19,7 @@
 #define modo_configuracion 0x2
 #define modo_configuracion_segundos 0x5
 #define modo_configuracion_minutos 0x6
+#define modo_alarma 0x7
 
 Boton_StartPausa	equ	RA0
 Boton_Reset	equ	RA1

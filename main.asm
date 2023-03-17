@@ -145,6 +145,7 @@ ManejarModoCronometroEmpezo
 
 ManejarModoTemporizadorCorriendo
 	call 	ManejarPulsadorConfiguracion
+	call	ManejarPulsadorPausarTemporizador
 	return
 	
 ManejarModoTemporizadorPausado
@@ -221,6 +222,11 @@ ManejarPulsadorReset
 ManejarPulsadorIniciarTemporizador
 	SiBotonFuePresionadoContinuar Boton_StartPausa	
 	CambiarModo modo_temporizador_empezo
+	return
+
+ManejarPulsadorPausarTemporizador
+	SiBotonFuePresionadoContinuar Boton_StartPausa	
+	CambiarModo modo_temporizador_pausado
 	return
 	
 ManejarPulsadorArribaConfiguraAlternar
@@ -390,6 +396,13 @@ CargarMilisegundosUnidad
 CambiarAModoAlarma
 	banksel PORTC
 	bsf PORTC, RC1
+	CambiarModo modo_alarma
+	return
+
+SalirModoALarma
+	; Solo garantiza que el display este apagado
+	banksel PORTC
+	bcf PORTC, RC1
 	return
 ;-----------------------	
 
